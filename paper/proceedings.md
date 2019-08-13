@@ -19,8 +19,8 @@ Shedding some light on how SUSE Manager is implemented is needed in order to ful
 
 ## Tradition vs Salt ##
 
-SUSE Manager used to be a downstream of an old and now less active project: spacewalk (https://spacewalkproject.github.io).
-However since May 2018 it has been open sourced into a new project: Uyuni (https://www.uyuni-project.org).
+SUSE Manager used to be a downstream of an old and now less active project: [spacewalk](https://spacewalkproject.github.io).
+However since May 2018 it has been open sourced into a new project: [Uyuni](https://www.uyuni-project.org).
 This has some consequences on the whole project architecture, with a lot of legacy code being around.
 
 SUSE Manager 3 introduced Salt.
@@ -39,14 +39,14 @@ SUSE Manager is web application written in Java, handling both the core of the l
 
 In order to get quick updates of the UI a salt engine reports the libvirt events to Salt.
 SUSE Manager being a Salt Reactor, the event is consumed directly and the database is then updated with the latest VM changes.
-In the following diagram, the engine part is a Salt engine named `libvirt_events` that registers a libvirt event callback converting all libvirt events into Salt events.
+In the following diagram, the engine part is a Salt engine named [`libvirt_events`](https://github.com/saltstack/salt/blob/develop/salt/engines/libvirt_events.py) that registers a libvirt event callback converting all libvirt events into Salt events.
 In some cases, like a VM creation, the libvirt event doesn't contain enough information for SUSE Manager to update its database and then a call to the salt virt module is made to get the missing VM definition.
 
 ![libvirt event handling](images/libvirt-event-chain.svg)
 
 This allows the user to still manage the virtual machines using `virsh`, `virt-manager` or anything else if needed.
-It also improves a lot the usability over the 5 minutes delay schedule for the `virt-poller` cron job used for traditional systems.
-However the `virt-poller` job is still used in case something breaks to ensure the data are updated at least every five minutes.
+It also improves a lot the usability over the 5 minutes delay schedule of the [`polling task`](https://github.com/uyuni-project/uyuni/blob/master/client/tools/mgr-virtualization/virtualization/poller.py) used for traditional systems.
+However the [`virtpoller`](https://github.com/uyuni-project/uyuni/blob/master/susemanager-utils/susemanager-sls/src/beacons/virtpoller.py) salt beacon is still used in case something breaks to ensure the data are updated at least every five minutes.
 
 Most of the actions from either the Web UI or the command line tools will be converted into an entry in the postgresql database.
 This entry is later on picked up by a task scheduler called Taskomatic that requests the Salt master to apply the appropriate Salt state.
@@ -64,7 +64,7 @@ Salt allows describing a target configuration using YAML files.
 These files are called state files and when applying them on a system Salt ensures the system will be in the described state and do the necessary changes.
 We can imagine describing which virtual machines are needed, their setup and what they depend on in a state.
 
-**Note:** in order for the example to run, the openSUSE salt 2019.2.0 package plus a few other patches from salt pull requests [#54196](https://github.com/saltstack/salt/pull/54196) and [#54196](http://github.com/saltstack/salt/pull/54197) is required.
+**Note:** in order for the example to run, the [openSUSE salt 2019.2.0](https://build.opensuse.org/package/show/systemsmanagement:saltstack:products:next/salt) package plus a few other patches from salt pull requests [#54196](https://github.com/saltstack/salt/pull/54196) and [#54196](http://github.com/saltstack/salt/pull/54197) is required.
 
 Create a `/srv/salt/vm.sls` file with the following content:
 
