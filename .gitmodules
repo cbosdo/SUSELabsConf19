@@ -1,0 +1,9 @@
+[submodule "slides/qrcodejs"]
+	path = slides/qrcodejs
+	url = https://github.com/davidshimjs/qrcodejs
+[submodule "slides/reveal.js"]
+	path = slides/reveal.js
+	url = https://github.com/hakimel/reveal.js
+[submodule "slides/reveal.js-menu"]
+	path = slides/reveal.js-menu
+	url = https://github.com/denehyg/reveal.js-menu
