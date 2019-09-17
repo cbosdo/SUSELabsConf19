@@ -1,8 +1,11 @@
 <!-- .slide: data-state="section-break" id="section-break-1" data-timing="10s" -->
 # Salting Your VMs
 
+Note:
+* Software Defined VMs
 
-<!-- .slide: data-state="normal" id="salt-states" data-timing="20s" data-menu-title="Salt States" -->
+
+<!-- .slide: data-state="normal" id="salt-states" data-timing="240s" data-menu-title="Salt States" -->
 ## Salt States
 
 * Define the target setup:
@@ -15,8 +18,8 @@ install_webserver:
 ```
 
 * Apply on multiple minions
-    * `salt 'web-*' state.apply install_webserver`
-    * `top.sls` file:
+    * `salt 'web-*' state.apply webserver`
+    * `/etc/salt/top.sls`
 
 ```yaml
 base:
@@ -24,9 +27,18 @@ base:
     - webserver
 ```
 
+https://docs.saltstack.com/en/latest/ref/states/all/index.html
 
-<!-- .slide: data-state="normal" id="vm-definition-state" data-timing="20s" data-menu-title="VM Definition" -->
+Note:
+* Lots of shipped states
+* ``/srv/salt/top.sls``
+    * patterns to select minions and apply state files
+    * GitOps
+
+
+<!-- .slide: data-state="normal" id="vm-definition-state" data-timing="120s" data-menu-title="VM Definition" -->
 ## VM definition
+
 ```yaml
 srv01:
   virt.running:
@@ -49,8 +61,15 @@ srv01:
     - seed: False
 ```
 
+Note:
+* image === template
+* size: uses ``virt-resize``
+* disks: need to use pools
+* Disk size and mem: in MiB
+* seed: injecting Salt
 
-<!-- .slide: data-state="normal" id="pool-definition" data-timing="20s" data-menu-title="Pool Definition" -->
+
+<!-- .slide: data-state="normal" id="pool-definition" data-timing="60s" data-menu-title="Pool Definition" -->
 ## Storage pool definition
 ```yaml
 pool0:
@@ -68,8 +87,12 @@ pool0:
 
 Fixes on the way!
 
+Note:
+* support for all libvirt types
+* libvirt XML data as YAML!
 
-<!-- .slide: data-state="normal" id="net-definition" data-timing="20s" data-menu-title="Net Definition" -->
+
+<!-- .slide: data-state="normal" id="net-definition" data-timing="120s" data-menu-title="Net Definition" -->
 ## Network definition
 ```yaml
 net0:
@@ -85,11 +108,15 @@ net0:
     - autostart: True
 ```
 
+Note:
+* Bridged:✔
+* NAT: patch on the way
+* Others: ❌
+* Missing IP/DNS fine tuning
 
-<!-- .slide: data-state="normal" id="chaining" data-timing="20s" data-menu-title="Putting it together" -->
+
+<!-- .slide: data-state="normal" id="chaining" data-timing="60s" data-menu-title="Putting it together" -->
 ## Putting it together
-
-* Chaining it:
 
 ```yaml
 srv01:
@@ -100,6 +127,31 @@ srv01:
       - virt: net0
 ```
 
-* Template it
-* Store in Git
-* Automate!
+https://docs.saltstack.com/en/latest/ref/states/requisites.html
+
+
+<!-- .slide: data-state="normal" id="templating" data-timing="120s" data-menu-title="To The Next Level" -->
+## To The Next Level
+
+```yaml
+{{pillar['vm_name']}}:
+  virt.running:
+    ...
+    - require:
+      - virt: pool0
+    {% if "vm_net" in pillar %}
+      - virt: {{pillar['vm_net']}}
+    {% endif %}
+```
+
+* https://docs.saltstack.com/en/latest/ref/renderers/
+* https://docs.saltstack.com/en/latest/topics/pillar/
+
+<div style="width:30%; margin-left: auto; margin-right: auto; margin-top: 2em">
+<img alt="git logo" data-src="images/git_icon.svg" style="display: block; float: left"/>
+<img alt="git logo" data-src="images/cog.svg" style="display: block; float: right"/>
+</div>
+
+Note:
+* Jinja, renderers
+* Pillar data
