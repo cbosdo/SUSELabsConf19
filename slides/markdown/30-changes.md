@@ -27,6 +27,7 @@ Note:
 * Websockify
 * Spice, VNC
 
+
 <!-- .slide: data-state="section-break-3" id="salt-into-play" data-timing="10s" -->
 # Where Salt Comes Into Play
 
