@@ -11,6 +11,8 @@
     </div>
 </div>
 
+Note:
+* Last SUSELabsCon in 2012!
 
 <!-- .slide: data-state="normal" id="agenda" data-menu-title="Agenda" -->
 ## Agenda
